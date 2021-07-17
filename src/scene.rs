@@ -34,8 +34,8 @@ impl Scene {
         let width = self.width as i32;
         let height = self.height as i32;
 
-        let near = 19.0;
-        let far = 25.0;
+        let near = 5.0;
+        let far = 30.0;
 
         for i in 0..width {
             for j in 0..height {
