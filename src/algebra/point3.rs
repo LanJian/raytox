@@ -1,5 +1,5 @@
-use std::ops::{Add, Sub, Neg, Mul};
 use crate::algebra::vector3::Vector3;
+use std::ops::{Add, Mul, Neg, Sub};
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Point3 {
@@ -9,8 +9,12 @@ pub struct Point3 {
 }
 
 impl Point3 {
-    pub const O: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
-    
+    pub const O: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    };
+
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }

@@ -3,7 +3,7 @@ use std::cmp::min;
 use crate::algebra::{point3::Point3, ray::Ray};
 
 //trait  {
-    
+
 //}
 
 pub struct Sphere {
@@ -38,8 +38,9 @@ impl Sphere {
             return Some((o + d * u, d));
         }
 
-        let t1 = d + det;
-        let t2 = d - det;
+        let sqrt_det = det.sqrt();
+        let t1 = d + sqrt_det;
+        let t2 = d - sqrt_det;
 
         if t1 < 0.0 && t2 < 0.0 {
             return None;
@@ -53,12 +54,26 @@ impl Sphere {
             return Some((o + t1 * u, t1));
         }
 
-        let t = if t1 < t2 {
-            t1
-        } else {
-            t2
-        };
+        let t = if t1 < t2 { t1 } else { t2 };
 
         Some((o + t * u, t))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::algebra::vector3::Vector3;
+
+    use super::*;
+
+    #[test]
+    fn intersection() {
+        let ray = Ray::new(&Point3::O, Vector3::new(0.0, 0.0, 1.0).normalize());
+        let sphere = Sphere::new(Point3::new(0.0, 0.0, 10.0), 5.0);
+
+        assert_eq!(
+            sphere.intersection(&ray),
+            Some((Point3::new(0.0, 0.0, 5.0), 5.0))
+        );
     }
 }

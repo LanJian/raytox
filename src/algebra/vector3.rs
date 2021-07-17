@@ -1,5 +1,4 @@
-use std::ops::{Add, Sub, Neg, Mul, Div};
-
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Vector3 {
@@ -9,30 +8,48 @@ pub struct Vector3 {
 }
 
 impl Vector3 {
-    pub const ZERO: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
-    pub const I: Self = Self { x: 1.0, y: 0.0, z: 0.0 };
-    pub const J: Self = Self { x: 0.0, y: 1.0, z: 0.0 };
-    pub const K: Self = Self { x: 0.0, y: 0.0, z: 1.0 };
+    pub const ZERO: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    pub const I: Self = Self {
+        x: 1.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    pub const J: Self = Self {
+        x: 0.0,
+        y: 1.0,
+        z: 0.0,
+    };
+    pub const K: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 1.0,
+    };
 
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
 
     pub fn dot(&self, rhs: &Self) -> f64 {
-        self.x * rhs.x + 
-        self.y * rhs.y + 
-        self.z * rhs.z
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
     pub fn cross(&self, rhs: &Self) -> Self {
-        let Self { x: ref bx, y: ref by, z: ref bz } = self;
-        let Self { x: ref cx, y: ref cy, z: ref cz } = rhs;
+        let Self {
+            x: ref bx,
+            y: ref by,
+            z: ref bz,
+        } = self;
+        let Self {
+            x: ref cx,
+            y: ref cy,
+            z: ref cz,
+        } = rhs;
 
-        Self::new(
-            by * cz - bz * cy,
-            bz * cx - bx * cz,
-            bx * cy - by * cx,
-        )
+        Self::new(by * cz - bz * cy, bz * cx - bx * cz, bx * cy - by * cx)
     }
 
     pub fn magnitude(&self) -> f64 {
@@ -91,7 +108,6 @@ impl Div<f64> for Vector3 {
         Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
-
 
 #[cfg(test)]
 mod tests {
