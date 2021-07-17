@@ -3,7 +3,7 @@
 Simple raytracer
 
 ## Progress
-![](output.png)
+![](out.png)
 
 ## Development
 ```
