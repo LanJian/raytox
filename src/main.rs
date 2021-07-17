@@ -1,16 +1,21 @@
-pub mod algebra;
+use algebra::{point3::Point3, vector3::Vector3};
+use camera::Camera;
+use scene::Scene;
 
-use image::{DynamicImage, GenericImage, GenericImageView, Pixel, Rgba};
-//use algebra::Vector;
+use crate::shape::Sphere;
+
+mod algebra;
+mod camera;
+mod scene;
+mod shape;
+mod color;
 
 fn main() {
-    let mut img = DynamicImage::new_rgb8(800, 600);
-    let red = Rgba::from_channels(255, 0, 0, 255);
-    for x in 0..img.width() {
-        for y in 0..img.height() {
-            img.put_pixel(x, y, red);
-        }
-    }
-    img.save("out.png").unwrap();
+    let camera = Camera::new(Point3::new(0.0, 0.0, -20.0), Vector3::K, Vector3::J);
+    println!("{:?}", camera);
 
+    let mut scene = Scene::new(800, 600, 70.0_f64.to_radians(), camera);
+    scene.add_object(Sphere::new(Point3::new(0.0, 0.0, 5.0), 5.0));
+
+    scene.render();
 }

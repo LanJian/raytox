@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Neg, Mul};
+use std::ops::{Add, Sub, Neg, Mul, Div};
 
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
@@ -24,9 +24,24 @@ impl Vector3 {
         self.z * rhs.z
     }
 
-    //pub fn cross(&self, rhs: &Self) -> Self {
-        //todo!()
-    //}
+    pub fn cross(&self, rhs: &Self) -> Self {
+        let Self { x: ref bx, y: ref by, z: ref bz } = self;
+        let Self { x: ref cx, y: ref cy, z: ref cz } = rhs;
+
+        Self::new(
+            by * cz - bz * cy,
+            bz * cx - bx * cz,
+            bx * cy - by * cx,
+        )
+    }
+
+    pub fn magnitude(&self) -> f64 {
+        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+    }
+
+    pub fn normalize(&self) -> Self {
+        *self / self.magnitude()
+    }
 }
 
 impl Add for Vector3 {
@@ -69,14 +84,51 @@ impl Mul<Vector3> for f64 {
     }
 }
 
+impl Div<f64> for Vector3 {
+    type Output = Self;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::Vector3;
 
     #[test]
-    fn test() {
+    fn add() {
         let expected = Vector3::new(1.0, 1.0, 0.0);
         let actual = Vector3::I + Vector3::J;
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn subtract() {
+        let expected = Vector3::new(1.0, -1.0, 0.0);
+        let actual = Vector3::I - Vector3::J;
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn negate() {
+        let expected = Vector3::new(-1.0, 0.0, 0.0);
+        let actual = -Vector3::I;
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn scalar_times_vector() {
+        let expected = Vector3::new(8.0, 0.0, 0.0);
+        let actual = 8.0 * Vector3::I;
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn vector_times_scalar() {
+        let expected = Vector3::new(0.0, 6.0, 0.0);
+        let actual = Vector3::J * 6.0;
         assert_eq!(actual, expected);
     }
 }
