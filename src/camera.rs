@@ -1,4 +1,4 @@
-use crate::algebra::{point3::Point3, vector3::Vector3};
+use crate::algebra::{Point3, Vector3};
 
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct Camera {

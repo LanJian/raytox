@@ -1,3 +1,7 @@
-pub mod point3;
-pub mod ray;
-pub mod vector3;
+mod point3;
+mod ray;
+mod vector3;
+
+pub use point3::Point3;
+pub use ray::Ray;
+pub use vector3::Vector3;

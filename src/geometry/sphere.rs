@@ -1,10 +1,4 @@
-use std::cmp::min;
-
-use crate::algebra::{point3::Point3, ray::Ray};
-
-//trait  {
-
-//}
+use crate::algebra::{Point3, Ray};
 
 pub struct Sphere {
     pub center: Point3,
@@ -62,7 +56,7 @@ impl Sphere {
 
 #[cfg(test)]
 mod tests {
-    use crate::algebra::vector3::Vector3;
+    use crate::algebra::Vector3;
 
     use super::*;
 

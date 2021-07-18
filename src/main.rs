@@ -1,14 +1,14 @@
-use algebra::{point3::Point3, vector3::Vector3};
+use algebra::{Point3, Vector3};
 use camera::Camera;
 use scene::Scene;
 
-use crate::shape::Sphere;
+use crate::geometry::Sphere;
 
 mod algebra;
 mod camera;
 mod color;
+mod geometry;
 mod scene;
-mod shape;
 
 fn main() {
     let camera = Camera::new(Point3::new(0.0, 0.0, -20.0), Vector3::K, Vector3::J);

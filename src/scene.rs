@@ -1,9 +1,9 @@
 use image::{DynamicImage, GenericImage, Pixel, Rgba};
 
 use crate::{
-    algebra::{point3::Point3, ray::Ray, vector3::Vector3},
+    algebra::{Point3, Ray},
     camera::Camera,
-    shape::Sphere,
+    geometry::Sphere,
 };
 
 pub struct Scene {
