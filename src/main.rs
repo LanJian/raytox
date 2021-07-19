@@ -22,7 +22,7 @@ fn main() {
         600,
         70.0_f64.to_radians(),
         camera,
-        Color::new(0.03, 0.03, 0.03),
+        Color::new(0.00, 0.03, 0.03),
     );
 
     scene.add_object(
@@ -42,7 +42,7 @@ fn main() {
             Point3::new(-5.0, 0.0, 5.0),
             5.0,
             Phong::new(
-                Color::WHITE * 0.1,
+                Color::WHITE * 0.03,
                 Color::GREEN,
                 Color::WHITE,
                 20.0,
@@ -54,7 +54,7 @@ fn main() {
             Point3::new(5.0, 0.0, 0.0),
             6.0,
             Phong::new(
-                Color::WHITE * 0.1,
+                Color::WHITE * 0.03,
                 Color::GREEN,
                 Color::WHITE,
                 20.0,
@@ -69,12 +69,12 @@ fn main() {
             Color::WHITE,
             Color::WHITE,
         ),
-        //PointLight::new(
-            //Point3::new(-100.0, 50.0, 0.0),
-            //Color::WHITE,
-            //Color::WHITE,
-            //Color::WHITE,
-        //),
+        PointLight::new(
+            Point3::new(-100.0, 50.0, 0.0),
+            Color::WHITE,
+            Color::WHITE,
+            Color::WHITE,
+        ),
     ];
 
     lights.iter().for_each(|light| scene.add_light(*light));

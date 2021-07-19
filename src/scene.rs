@@ -105,9 +105,11 @@ impl Scene {
 
                     let offset_position = position + EPSILON * normal;
                     let shadow_ray =
-                        Ray::new(&offset_position, (light.position - position).normalize());
+                        Ray::new(&offset_position, l);
 
-                    if self.closest_intersection(&shadow_ray).is_none()
+                    if self.closest_intersection(&shadow_ray).is_some() {
+                        return color;
+                    }
 
                     if l.dot(&n) > 0.0 {
                         color = color + kd * l.dot(&n) * id
