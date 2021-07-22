@@ -6,6 +6,7 @@ use geometry::Sphere;
 use light::PointLight;
 use material::Phong;
 use scene::Scene;
+use texture::Checker;
 
 mod algebra;
 mod camera;
@@ -14,6 +15,7 @@ mod geometry;
 mod light;
 mod material;
 mod scene;
+mod texture;
 
 fn main() {
     let camera = Camera::new(Point3::new(0.0, 0.0, -20.0), Vector3::K, Vector3::J);
@@ -31,7 +33,7 @@ fn main() {
             Vector3::J,
             Phong::new(
                 Color::WHITE * 0.03,
-                Color::WHITE * 0.4,
+                Checker::new(Color::WHITE * 0.4, Color::WHITE * 0.03),
                 Color::WHITE,
                 20.0,
             ),

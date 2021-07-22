@@ -6,7 +6,7 @@ use crate::{
     color::Color,
     geometry::Geometry,
     geometry::Sphere,
-    geometry::{Intersect, Intersection},
+    geometry::{Intersect, Intersection, Textured},
     light::PointLight,
     material::Phong,
 };
@@ -72,23 +72,18 @@ impl Scene {
             Some((
                 obj,
                 Intersection {
-                    position, normal, ..
+                    position: intersect_point, normal, ..
                 },
             )) => self
                 .lights
                 .iter()
-                //.filter(|light| {
-                    //let offset_position = position + EPSILON * normal;
-                    //let shadow_ray =
-                        //Ray::new(&offset_position, (light.position - position).normalize());
-
-                    //self.closest_intersection(&shadow_ray).is_none()
-                //})
                 .map(|light| {
                     let material = obj.material();
-                    let ka = material.ambient;
-                    let kd = material.diffuse;
-                    let ks = material.specular;
+                    let uv = obj.to_uv(&intersect_point);
+
+                    let ka = material.ambient.color_at(&uv);
+                    let kd = material.diffuse.color_at(&uv);
+                    let ks = material.specular.color_at(&uv);
                     let alpha = material.shininess;
 
                     let ip = light.position;
@@ -96,14 +91,14 @@ impl Scene {
                     let id = light.diffuse;
                     let is = light.specular;
 
-                    let l = (ip - position).normalize();
+                    let l = (ip - intersect_point).normalize();
                     let n = normal;
                     let r = 2.0 * l.dot(&n) * n - l;
                     let v = -ray.dir;
 
                     let mut color = ka * ia;
 
-                    let offset_position = position + EPSILON * normal;
+                    let offset_position = intersect_point + EPSILON * normal;
                     let shadow_ray =
                         Ray::new(&offset_position, l);
 

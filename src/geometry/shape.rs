@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 use crate::algebra::Ray;
 use crate::algebra::{Point3, Vector3};
 use crate::material::Phong;
+use crate::texture::TextureCoordinate;
 
 use super::Sphere;
 use super::Plane;
@@ -15,6 +16,10 @@ pub enum Geometry {
 
 pub trait Intersect {
     fn intersect(&self, ray: &Ray) -> Option<Intersection>;
+}
+
+pub trait Textured {
+    fn to_uv(&self, p: &Point3) -> TextureCoordinate;
 }
 
 impl Geometry {
@@ -31,6 +36,15 @@ impl Intersect for Geometry {
         match self {
             Self::Sphere(x) => x.intersect(ray),
             Self::Plane(x) => x.intersect(ray),
+        }
+    }
+}
+
+impl Textured for Geometry {
+    fn to_uv(&self, p: &Point3) -> TextureCoordinate {
+        match self {
+            Self::Sphere(x) => x.to_uv(p),
+            Self::Plane(x) => x.to_uv(p),
         }
     }
 }

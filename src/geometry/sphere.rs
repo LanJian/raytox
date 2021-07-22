@@ -1,8 +1,9 @@
 use crate::algebra::{Point3, Ray, Vector3};
 use crate::material::Phong;
+use crate::texture::TextureCoordinate;
 
 use super::Intersect;
-use super::shape::Intersection;
+use super::shape::{Intersection, Textured};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Sphere {
@@ -67,6 +68,12 @@ impl Intersect for Sphere {
         let p = o + t * u;
         let n = (p - c) / r;
         Some(Intersection::new(t, p, n))
+    }
+}
+
+impl Textured for Sphere {
+    fn to_uv(&self, p: &Point3) -> TextureCoordinate {
+        TextureCoordinate::default()
     }
 }
 
