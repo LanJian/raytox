@@ -1,9 +1,9 @@
 use crate::algebra::EPSILON;
+use crate::algebra::Point2;
 use crate::algebra::Point3;
 use crate::algebra::Vector3;
 use crate::algebra::Ray;
 use crate::material::Phong;
-use crate::texture::TextureCoordinate;
 
 use super::Intersect;
 use super::Intersection;
@@ -42,7 +42,7 @@ impl Intersect for Plane {
 }
 
 impl Textured for Plane {
-    fn to_uv(&self, p: &Point3) -> TextureCoordinate {
+    fn to_texture_space(&self, p: &Point3) -> Point2 {
         let mut candidate = self.normal.cross(&Vector3::K);
         if candidate.magnitude() < EPSILON {
             candidate = self.normal.cross(&(-Vector3::J));
@@ -51,9 +51,9 @@ impl Textured for Plane {
         let v_hat = u_hat.cross(&self.normal);
         let l = *p - self.origin;
 
-        TextureCoordinate::new(
-            l.dot(&u_hat).rem_euclid(1.0),
-            l.dot(&v_hat).rem_euclid(1.0)
+        Point2::new(
+            l.dot(&u_hat),
+            l.dot(&v_hat),
         )
     }
 }

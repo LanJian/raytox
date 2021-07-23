@@ -1,4 +1,4 @@
-use crate::algebra::{Point3, Ray, Vector3};
+use crate::algebra::{Point2, Point3, Ray, Vector3};
 use crate::material::Phong;
 use crate::texture::TextureCoordinate;
 
@@ -72,8 +72,8 @@ impl Intersect for Sphere {
 }
 
 impl Textured for Sphere {
-    fn to_uv(&self, p: &Point3) -> TextureCoordinate {
-        TextureCoordinate::default()
+    fn to_texture_space(&self, p: &Point3) -> Point2 {
+        Point2::default()
     }
 }
 

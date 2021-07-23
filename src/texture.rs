@@ -4,7 +4,13 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum Texture {
+pub struct Texture {
+    scale: f64,
+    data: TextureData,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TextureData {
     Color(Color),
     Checker(Checker),
 }
@@ -27,23 +33,44 @@ impl TextureCoordinate {
 }
 
 impl Texture {
-    pub fn color_at(&self, p: &TextureCoordinate) -> Color {
-        match self {
-            Self::Color(c) => *c,
-            Self::Checker(c) => c.color_at(p),
+    pub fn new(scale: f64, data: impl Into<TextureData>) -> Self {
+        Self { scale, data: data.into() }
+    }
+
+    pub fn color_at(&self, p: &Point2) -> Color {
+        let uv = TextureCoordinate(Point2::new(
+            ((*p).x / self.scale).rem_euclid(1.0),
+            ((*p).y / self.scale).rem_euclid(1.0),
+        ));
+
+        match self.data {
+            TextureData::Color(c) => c,
+            TextureData::Checker(c) => c.color_at(&uv),
         }
     }
 }
 
-impl From<Color> for Texture {
+impl From<Color> for TextureData {
     fn from(c: Color) -> Self {
         Self::Color(c)
     }
 }
 
-impl From<Checker> for Texture {
+impl From<Checker> for TextureData {
     fn from(c: Checker) -> Self {
         Self::Checker(c)
+    }
+}
+
+impl From<Color> for Texture {
+    fn from(c: Color) -> Self {
+        Self::new(1.0, TextureData::Color(c))
+    }
+}
+
+impl From<Checker> for Texture {
+    fn from(c: Checker) -> Self {
+        Self::new(1.0, TextureData::Checker(c))
     }
 }
 
@@ -60,7 +87,7 @@ impl Checker {
 
     pub fn color_at(&self, p: &TextureCoordinate) -> Color {
         if (p.u() < 0.5) ^ (p.v() < 0.5) {
-            return self.primary
+            return self.primary;
         }
 
         self.secondary

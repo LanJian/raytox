@@ -1,9 +1,8 @@
 use std::cmp::Ordering;
 
-use crate::algebra::Ray;
+use crate::algebra::{Point2, Ray};
 use crate::algebra::{Point3, Vector3};
 use crate::material::Phong;
-use crate::texture::TextureCoordinate;
 
 use super::Sphere;
 use super::Plane;
@@ -19,7 +18,7 @@ pub trait Intersect {
 }
 
 pub trait Textured {
-    fn to_uv(&self, p: &Point3) -> TextureCoordinate;
+    fn to_texture_space(&self, p: &Point3) -> Point2;
 }
 
 impl Geometry {
@@ -41,10 +40,10 @@ impl Intersect for Geometry {
 }
 
 impl Textured for Geometry {
-    fn to_uv(&self, p: &Point3) -> TextureCoordinate {
+    fn to_texture_space(&self, p: &Point3) -> Point2 {
         match self {
-            Self::Sphere(x) => x.to_uv(p),
-            Self::Plane(x) => x.to_uv(p),
+            Self::Sphere(x) => x.to_texture_space(p),
+            Self::Plane(x) => x.to_texture_space(p),
         }
     }
 }

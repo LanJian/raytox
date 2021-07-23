@@ -7,6 +7,7 @@ use light::PointLight;
 use material::Phong;
 use scene::Scene;
 use texture::Checker;
+use texture::Texture;
 
 mod algebra;
 mod camera;
@@ -27,42 +28,26 @@ fn main() {
         Color::new(0.00, 0.03, 0.03),
     );
 
-    scene.add_object(
-        Plane::new(
-            Point3::new(0.0, -10.0, 0.0),
-            Vector3::J,
-            Phong::new(
-                Color::WHITE * 0.03,
-                Checker::new(Color::WHITE * 0.4, Color::WHITE * 0.03),
-                Color::WHITE,
-                20.0,
-            ),
-        )
-    );
-    scene.add_object(
-        Sphere::new(
-            Point3::new(-5.0, 0.0, 5.0),
-            5.0,
-            Phong::new(
-                Color::WHITE * 0.03,
-                Color::GREEN,
-                Color::WHITE,
-                20.0,
-            ),
-        )
-    );
-    scene.add_object(
-        Sphere::new(
-            Point3::new(5.0, 0.0, 0.0),
-            6.0,
-            Phong::new(
-                Color::WHITE * 0.03,
-                Color::GREEN,
-                Color::WHITE,
-                20.0,
-            ),
-        )
-    );
+    scene.add_object(Plane::new(
+        Point3::new(0.0, -10.0, 0.0),
+        Vector3::J,
+        Phong::new(
+            Color::WHITE * 0.03,
+            Texture::new(5.0, Checker::new(Color::WHITE * 0.4, Color::WHITE * 0.03)),
+            Color::WHITE,
+            20.0,
+        ),
+    ));
+    scene.add_object(Sphere::new(
+        Point3::new(-5.0, 0.0, 5.0),
+        5.0,
+        Phong::new(Color::WHITE * 0.03, Color::GREEN, Color::WHITE, 20.0),
+    ));
+    scene.add_object(Sphere::new(
+        Point3::new(5.0, 0.0, 0.0),
+        6.0,
+        Phong::new(Color::WHITE * 0.03, Color::GREEN, Color::WHITE, 20.0),
+    ));
 
     let lights = [
         PointLight::new(

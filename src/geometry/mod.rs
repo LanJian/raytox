@@ -8,3 +8,4 @@ pub use shape::Textured;
 mod sphere;
 mod plane;
 mod shape;
+mod polygon;

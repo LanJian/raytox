@@ -79,7 +79,7 @@ impl Scene {
                 .iter()
                 .map(|light| {
                     let material = obj.material();
-                    let uv = obj.to_uv(&intersect_point);
+                    let uv = obj.to_texture_space(&intersect_point);
 
                     let ka = material.ambient.color_at(&uv);
                     let kd = material.diffuse.color_at(&uv);
