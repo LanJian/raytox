@@ -1,6 +1,6 @@
 use crate::{color::Color, texture::Texture};
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Phong {
     pub ambient: Texture,
     pub diffuse: Texture,

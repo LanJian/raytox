@@ -8,4 +8,4 @@ pub use point3::Point3;
 pub use ray::Ray;
 pub use vector3::Vector3;
 
-pub const EPSILON: f64 = 1e-10;
+pub const EPSILON: f64 = 1e-6;

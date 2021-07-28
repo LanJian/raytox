@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::algebra::{Point2, Point3, Ray, Vector3};
 use crate::material::Phong;
 use crate::texture::TextureCoordinate;
@@ -5,7 +7,7 @@ use crate::texture::TextureCoordinate;
 use super::Intersect;
 use super::shape::{Intersection, Textured};
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,
@@ -73,7 +75,11 @@ impl Intersect for Sphere {
 
 impl Textured for Sphere {
     fn to_texture_space(&self, p: &Point3) -> Point2 {
-        Point2::default()
+        let d = (self.center - *p).normalize();
+        Point2::new(
+            0.5 + d.z.atan2(d.x) / (2.0 * PI),
+            0.5 - d.y.asin() / PI,
+        )
     }
 }
 
@@ -96,5 +102,9 @@ mod tests {
                 Vector3::new(0.0, 0.0, -1.0)
             )),
         );
+    }
+
+    #[test]
+    fn to_texture_space() {
     }
 }

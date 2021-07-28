@@ -55,6 +55,16 @@ impl From<Color> for Rgba<u8> {
     }
 }
 
+impl From<Rgba<u8>> for Color {
+    fn from(c: Rgba<u8>) -> Self {
+        Color::new(
+            c[0] as f64 / 255.0,
+            c[1] as f64 / 255.0,
+            c[2] as f64 / 255.0,
+        )
+    }
+}
+
 impl Add for Color {
     type Output = Self;
 

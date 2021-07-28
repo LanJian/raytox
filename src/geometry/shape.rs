@@ -6,11 +6,13 @@ use crate::material::Phong;
 
 use super::Sphere;
 use super::Plane;
+use super::Mesh;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Geometry {
     Sphere(Sphere),
     Plane(Plane),
+    Mesh(Mesh),
 }
 
 pub trait Intersect {
@@ -24,8 +26,9 @@ pub trait Textured {
 impl Geometry {
     pub fn material(&self) -> Phong {
         match self {
-            Self::Sphere(x) => x.material,
-            Self::Plane(x) => x.material,
+            Self::Sphere(x) => x.material.clone(),
+            Self::Plane(x) => x.material.clone(),
+            Self::Mesh(x) => x.material.clone(),
         }
     }
 }
@@ -35,6 +38,7 @@ impl Intersect for Geometry {
         match self {
             Self::Sphere(x) => x.intersect(ray),
             Self::Plane(x) => x.intersect(ray),
+            Self::Mesh(x) => x.intersect(ray),
         }
     }
 }
@@ -44,6 +48,7 @@ impl Textured for Geometry {
         match self {
             Self::Sphere(x) => x.to_texture_space(p),
             Self::Plane(x) => x.to_texture_space(p),
+            Self::Mesh(x) => x.to_texture_space(p),
         }
     }
 }
@@ -57,6 +62,12 @@ impl From<Sphere> for Geometry {
 impl From<Plane> for Geometry {
     fn from(p: Plane) -> Self {
         Geometry::Plane(p)
+    }
+}
+
+impl From<Mesh> for Geometry {
+    fn from(m: Mesh) -> Self {
+        Geometry::Mesh(m)
     }
 }
 

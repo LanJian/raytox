@@ -102,7 +102,8 @@ impl Scene {
                     let shadow_ray =
                         Ray::new(&offset_position, l);
 
-                    if self.closest_intersection(&shadow_ray).is_some() {
+                    let shadow_intersection = self.closest_intersection(&shadow_ray);
+                    if shadow_intersection.is_some() {
                         return color;
                     }
 

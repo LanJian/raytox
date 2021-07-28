@@ -9,7 +9,7 @@ use super::Intersect;
 use super::Intersection;
 use super::shape::Textured;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Plane {
     pub origin: Point3,
     pub normal: Vector3,
@@ -37,6 +37,10 @@ impl Intersect for Plane {
         }
 
         let t = (l0 - p0).dot(&n) / denom;
+        if t < EPSILON {
+            return None
+        }
+
         Some(Intersection::new(t, l0 + t * ray.dir, n))
     }
 }
@@ -55,5 +59,62 @@ impl Textured for Plane {
             l.dot(&u_hat),
             l.dot(&v_hat),
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn intersect_hit() {
+        let p = Point3::new(0.0, 10.0, 0.0);
+        let ray = Ray::new(&p, -Vector3::J);
+        let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
+
+        assert_eq!(
+            plane.intersect(&ray),
+            Some(Intersection::new(
+                10.0,
+                Point3::O,
+                Vector3::J,
+            )),
+        );
+    }
+
+    #[test]
+    fn intersect_miss() {
+        let p = Point3::new(0.0, 10.0, 0.0);
+        let ray = Ray::new(&p, Vector3::J);
+        let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
+
+        assert_eq!(
+            plane.intersect(&ray),
+            None,
+        );
+    }
+
+    #[test]
+    fn intersect_parallel() {
+        let p = Point3::new(0.0, 10.0, 0.0);
+        let ray = Ray::new(&p, Vector3::K);
+        let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
+
+        assert_eq!(
+            plane.intersect(&ray),
+            None,
+        );
+    }
+
+    #[test]
+    fn intersect_negative_t() {
+        let p = Point3::new(0.0, 10.0, 0.0);
+        let ray = Ray::new(&p, Vector3::J);
+        let plane = Plane::new(Point3::O, -Vector3::J, Phong::default());
+
+        assert_eq!(
+            plane.intersect(&ray),
+            None,
+        );
     }
 }
