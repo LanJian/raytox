@@ -8,6 +8,5 @@ Simple raytracer
 
 ## Development
 ```
-cargo install
-cargo run
+cargo run --release --example basic
 ```
