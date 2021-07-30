@@ -1,9 +1,9 @@
 use image::DynamicImage;
 use image::GenericImageView;
 
-use crate::Color;
-use super::TextureCoordinate;
 use super::ColoredTexture;
+use super::TextureCoordinate;
+use crate::color::Color;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Image {

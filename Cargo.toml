@@ -7,3 +7,6 @@ edition = "2018"
 
 [dependencies]
 image = "*"
+ply-rs = "*"
+rayon = "*"
+itertools = "*"

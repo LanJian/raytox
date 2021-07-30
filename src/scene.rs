@@ -1,14 +1,14 @@
 use image::{DynamicImage, GenericImage, Pixel, Rgb, Rgba};
+use itertools::Itertools;
+use rayon::prelude::*;
 
 use crate::{
-    algebra::{Point3, Ray, Vector3, EPSILON},
+    algebra::{Ray, EPSILON},
     camera::Camera,
     color::Color,
     geometry::Geometry,
-    geometry::Sphere,
     geometry::{Intersect, Intersection, Textured},
     light::PointLight,
-    material::Phong,
 };
 
 pub struct Scene {
@@ -50,8 +50,10 @@ impl Scene {
         let width = self.width as i32;
         let height = self.height as i32;
 
-        for i in 0..width {
-            for j in 0..height {
+        let screen: Vec<(i32, i32)> = (0..width).cartesian_product(0..height).collect();
+        let pixels: Vec<(i32, i32, Color)> = screen
+            .par_iter()
+            .map(|(i, j)| {
                 let raw = d * self.camera.view
                     + (i - (width / 2)) as f64 * self.camera.side
                     + ((height / 2) - j) as f64 * self.camera.up;
@@ -59,9 +61,12 @@ impl Scene {
 
                 let ray = Ray::new(&self.camera.position, v);
 
-                let color = self.trace(ray);
-                img.put_pixel(i as u32, j as u32, color.into());
-            }
+                (*i, *j, self.trace(ray))
+            })
+            .collect();
+
+        for (i, j, color) in pixels {
+            img.put_pixel(i as u32, j as u32, color.into());
         }
 
         img.save(outfile).unwrap();
@@ -72,7 +77,9 @@ impl Scene {
             Some((
                 obj,
                 Intersection {
-                    position: intersect_point, normal, ..
+                    position: intersect_point,
+                    normal,
+                    ..
                 },
             )) => self
                 .lights
@@ -86,6 +93,7 @@ impl Scene {
                     let ks = material.specular.color_at(&uv);
                     let alpha = material.shininess;
 
+                    let intensity = light.intensity_at(&intersect_point);
                     let ip = light.position;
                     let ia = light.ambient;
                     let id = light.diffuse;
@@ -96,23 +104,30 @@ impl Scene {
                     let r = 2.0 * l.dot(&n) * n - l;
                     let v = -ray.dir;
 
-                    let mut color = ka * ia;
+                    let mut color = ka * ia * intensity;
 
                     let offset_position = intersect_point + EPSILON * normal;
-                    let shadow_ray =
-                        Ray::new(&offset_position, l);
+                    let shadow_ray = Ray::new(&offset_position, l);
 
                     let shadow_intersection = self.closest_intersection(&shadow_ray);
-                    if shadow_intersection.is_some() {
+                    let obstructed = match shadow_intersection {
+                        Some((_, Intersection { t, .. }))
+                            if (ip - offset_position).magnitude() > t =>
+                        {
+                            true
+                        }
+                        _ => false,
+                    };
+                    if obstructed {
                         return color;
                     }
 
                     if l.dot(&n) > 0.0 {
-                        color = color + kd * l.dot(&n) * id
+                        color = color + kd * l.dot(&n) * id * intensity;
                     }
 
                     if r.dot(&v) > 0.0 {
-                        color = color + ks * r.dot(&v).powf(alpha) * is;
+                        color = color + ks * r.dot(&v).powf(alpha) * is * intensity;
                     }
 
                     color

@@ -52,8 +52,12 @@ impl Vector3 {
         Self::new(by * cz - bz * cy, bz * cx - bx * cz, bx * cy - by * cx)
     }
 
+    pub fn norm(&self) -> f64 {
+        self.dot(self)
+    }
+
     pub fn magnitude(&self) -> f64 {
-        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+        self.norm().sqrt()
     }
 
     pub fn normalize(&self) -> Self {

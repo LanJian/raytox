@@ -1,8 +1,8 @@
 use crate::algebra::Point2;
 use crate::color::Color;
 
-pub use checker::Checker;
 pub use self::image::Image;
+pub use checker::Checker;
 
 pub mod checker;
 pub mod image;
@@ -57,7 +57,10 @@ pub struct Texture {
 
 impl Texture {
     pub fn new(scale: f64, data: impl Into<TextureData>) -> Self {
-        Self { scale, data: data.into() }
+        Self {
+            scale,
+            data: data.into(),
+        }
     }
 
     pub fn color_at(&self, p: &Point2) -> Color {

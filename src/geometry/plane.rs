@@ -1,13 +1,13 @@
-use crate::algebra::EPSILON;
 use crate::algebra::Point2;
 use crate::algebra::Point3;
-use crate::algebra::Vector3;
 use crate::algebra::Ray;
+use crate::algebra::Vector3;
+use crate::algebra::EPSILON;
 use crate::material::Phong;
 
+use super::shape::Textured;
 use super::Intersect;
 use super::Intersection;
-use super::shape::Textured;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Plane {
@@ -19,7 +19,11 @@ pub struct Plane {
 
 impl Plane {
     pub fn new(origin: Point3, normal: Vector3, material: Phong) -> Self {
-        Self { origin, normal, material }
+        Self {
+            origin,
+            normal,
+            material,
+        }
     }
 }
 
@@ -29,7 +33,7 @@ impl Intersect for Plane {
         let l = -ray.dir;
         let p0 = self.origin;
         let n = self.normal;
-            
+
         let denom = l.dot(&n);
 
         if denom < EPSILON {
@@ -38,7 +42,7 @@ impl Intersect for Plane {
 
         let t = (l0 - p0).dot(&n) / denom;
         if t < EPSILON {
-            return None
+            return None;
         }
 
         Some(Intersection::new(t, l0 + t * ray.dir, n))
@@ -55,10 +59,7 @@ impl Textured for Plane {
         let v_hat = u_hat.cross(&self.normal);
         let l = *p - self.origin;
 
-        Point2::new(
-            l.dot(&u_hat),
-            l.dot(&v_hat),
-        )
+        Point2::new(l.dot(&u_hat), l.dot(&v_hat))
     }
 }
 
@@ -74,11 +75,7 @@ mod tests {
 
         assert_eq!(
             plane.intersect(&ray),
-            Some(Intersection::new(
-                10.0,
-                Point3::O,
-                Vector3::J,
-            )),
+            Some(Intersection::new(10.0, Point3::O, Vector3::J,)),
         );
     }
 
@@ -88,10 +85,7 @@ mod tests {
         let ray = Ray::new(&p, Vector3::J);
         let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
 
-        assert_eq!(
-            plane.intersect(&ray),
-            None,
-        );
+        assert_eq!(plane.intersect(&ray), None,);
     }
 
     #[test]
@@ -100,10 +94,7 @@ mod tests {
         let ray = Ray::new(&p, Vector3::K);
         let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
 
-        assert_eq!(
-            plane.intersect(&ray),
-            None,
-        );
+        assert_eq!(plane.intersect(&ray), None,);
     }
 
     #[test]
@@ -112,9 +103,6 @@ mod tests {
         let ray = Ray::new(&p, Vector3::J);
         let plane = Plane::new(Point3::O, -Vector3::J, Phong::default());
 
-        assert_eq!(
-            plane.intersect(&ray),
-            None,
-        );
+        assert_eq!(plane.intersect(&ray), None,);
     }
 }

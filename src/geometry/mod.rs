@@ -1,14 +1,15 @@
-pub use sphere::Sphere;
 pub use plane::Plane;
-pub use shape::Intersection;
-pub use shape::Intersect;
-pub use shape::Geometry;
-pub use shape::Textured;
-pub use polygon::Mesh;
 pub use polygon::Face;
+pub use polygon::Mesh;
 pub use polygon::Vertex;
+pub use shape::Geometry;
+pub use shape::Intersect;
+pub use shape::Intersection;
+pub use shape::Textured;
+pub use sphere::Sphere;
 
-mod sphere;
 mod plane;
-mod shape;
+mod ply;
 mod polygon;
+mod shape;
+mod sphere;

@@ -1,5 +1,5 @@
-use crate::Color;
 use super::{ColoredTexture, TextureCoordinate};
+use crate::color::Color;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Checker {

@@ -4,8 +4,8 @@ use crate::algebra::{Point2, Point3, Ray, Vector3};
 use crate::material::Phong;
 use crate::texture::TextureCoordinate;
 
-use super::Intersect;
 use super::shape::{Intersection, Textured};
+use super::Intersect;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Sphere {
@@ -17,7 +17,11 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(center: Point3, radius: f64, material: Phong) -> Self {
-        Self { center, radius, material }
+        Self {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -66,7 +70,6 @@ impl Intersect for Sphere {
             }
         }
 
-
         let p = o + t * u;
         let n = (p - c) / r;
         Some(Intersection::new(t, p, n))
@@ -76,10 +79,7 @@ impl Intersect for Sphere {
 impl Textured for Sphere {
     fn to_texture_space(&self, p: &Point3) -> Point2 {
         let d = (self.center - *p).normalize();
-        Point2::new(
-            0.5 + d.z.atan2(d.x) / (2.0 * PI),
-            0.5 - d.y.asin() / PI,
-        )
+        Point2::new(0.5 + d.z.atan2(d.x) / (2.0 * PI), 0.5 - d.y.asin() / PI)
     }
 }
 
@@ -105,6 +105,5 @@ mod tests {
     }
 
     #[test]
-    fn to_texture_space() {
-    }
+    fn to_texture_space() {}
 }

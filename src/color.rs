@@ -1,5 +1,8 @@
 use image::{Pixel, Rgba};
-use std::{iter::Sum, ops::{Add, Mul, Sub}};
+use std::{
+    iter::Sum,
+    ops::{Add, Mul, Sub},
+};
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Color {
@@ -85,7 +88,8 @@ impl Mul<f64> for Color {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        Self::new(self.r * rhs, self.g * rhs, self.b * rhs)
+        let val = rhs.clamp(0.0, 1.0);
+        Self::new(self.r * val, self.g * val, self.b * val)
     }
 }
 
@@ -93,7 +97,8 @@ impl Mul<Color> for f64 {
     type Output = Color;
 
     fn mul(self, rhs: Color) -> Self::Output {
-        Color::new(self * rhs.r, self * rhs.g, self * rhs.b)
+        let val = self.clamp(0.0, 1.0);
+        Color::new(val * rhs.r, val * rhs.g, val * rhs.b)
     }
 }
 
@@ -107,8 +112,6 @@ impl Mul for Color {
 
 impl Sum for Color {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Color::BLACK, |a, e| {
-            a + e
-        })
+        iter.fold(Color::BLACK, |a, e| a + e)
     }
 }

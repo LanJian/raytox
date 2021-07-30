@@ -4,9 +4,9 @@ use crate::algebra::{Point2, Ray};
 use crate::algebra::{Point3, Vector3};
 use crate::material::Phong;
 
-use super::Sphere;
-use super::Plane;
 use super::Mesh;
+use super::Plane;
+use super::Sphere;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Geometry {
@@ -24,11 +24,11 @@ pub trait Textured {
 }
 
 impl Geometry {
-    pub fn material(&self) -> Phong {
+    pub fn material(&self) -> &Phong {
         match self {
-            Self::Sphere(x) => x.material.clone(),
-            Self::Plane(x) => x.material.clone(),
-            Self::Mesh(x) => x.material.clone(),
+            Self::Sphere(x) => &x.material,
+            Self::Plane(x) => &x.material,
+            Self::Mesh(x) => &x.material,
         }
     }
 }
@@ -80,7 +80,11 @@ pub struct Intersection {
 
 impl Intersection {
     pub fn new(t: f64, position: Point3, normal: Vector3) -> Self {
-        Self { t, position, normal }
+        Self {
+            t,
+            position,
+            normal,
+        }
     }
 }
 
