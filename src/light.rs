@@ -1,6 +1,6 @@
 use crate::algebra::Point3;
 use crate::color::Color;
-use std::f64::consts::PI;
+
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct PointLight {

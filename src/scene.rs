@@ -1,4 +1,4 @@
-use image::{DynamicImage, GenericImage, Pixel, Rgb, Rgba};
+use image::{DynamicImage, GenericImage};
 use indicatif::{ProgressBar, ProgressStyle};
 use itertools::Itertools;
 use rayon::prelude::*;

@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::Div;
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Point2 {

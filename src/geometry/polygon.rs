@@ -3,7 +3,7 @@ use std::fs::File;
 
 use ply_rs::{
     parser::Parser,
-    ply::{DefaultElement, Ply, Property},
+    ply::{DefaultElement, Property},
 };
 
 use crate::{
@@ -210,7 +210,7 @@ impl Intersect for Mesh {
 }
 
 impl Textured for Mesh {
-    fn to_texture_space(&self, p: &Point3) -> Point2 {
+    fn to_texture_space(&self, _p: &Point3) -> Point2 {
         Point2::default()
     }
 }

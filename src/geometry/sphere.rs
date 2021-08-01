@@ -1,8 +1,8 @@
 use std::f64::consts::PI;
 
-use crate::algebra::{Point2, Point3, Ray, Vector3};
+use crate::algebra::{Point2, Point3, Ray};
 use crate::material::Phong;
-use crate::texture::TextureCoordinate;
+
 
 use super::shape::{Intersection, Textured};
 use super::Intersect;
