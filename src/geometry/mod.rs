@@ -7,9 +7,11 @@ pub use shape::Intersect;
 pub use shape::Intersection;
 pub use shape::Textured;
 pub use sphere::Sphere;
+pub use cube::Cube;
 
 mod plane;
 mod ply;
 mod polygon;
 mod shape;
 mod sphere;
+mod cube;

@@ -11,7 +11,7 @@ use crate::{
     material::Phong,
 };
 
-use super::{Intersect, Intersection, Plane, Textured};
+use super::{Cube, Intersect, Intersection, Plane, Textured};
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Vertex {
@@ -89,6 +89,7 @@ impl Intersect for Face {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Mesh {
     pub faces: Vec<Face>,
+    bounding_box: Cube,
 
     pub material: Phong,
 }
@@ -147,12 +148,49 @@ impl Mesh {
 
         Ok(Self::from(faces))
     }
+
+    fn calculate_bounding_box(faces: &Vec<Face>) -> Cube {
+        let mut min_bounds = Point3::new(f64::INFINITY, f64::INFINITY, f64::INFINITY);
+        let mut max_bounds = Point3::new(-f64::INFINITY, -f64::INFINITY, -f64::INFINITY);
+
+        for face in faces {
+            for vertex in &face.vertices {
+                let p = vertex.point;
+
+                if p.x < min_bounds.x {
+                    min_bounds.x = p.x
+                }
+                if p.x > max_bounds.x {
+                    max_bounds.x = p.x
+                }
+
+                if p.y < min_bounds.y {
+                    min_bounds.y = p.y
+                }
+                if p.y > max_bounds.y {
+                    max_bounds.y = p.y
+                }
+
+                if p.z < min_bounds.z {
+                    min_bounds.z = p.z
+                }
+                if p.z > max_bounds.z {
+                    max_bounds.z = p.z
+                }
+            }
+        }
+
+        Cube::new(min_bounds, max_bounds)
+    }
 }
 
 impl From<Vec<Face>> for Mesh {
     fn from(faces: Vec<Face>) -> Self {
+        let bounding_box = Self::calculate_bounding_box(&faces);
+
         Self {
             faces,
+            bounding_box,
             material: Phong::default(),
         }
     }
@@ -160,6 +198,10 @@ impl From<Vec<Face>> for Mesh {
 
 impl Intersect for Mesh {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
+        if self.bounding_box.intersect(ray).is_none() {
+            return None;
+        }
+
         self.faces
             .iter()
             .filter_map(|x| x.intersect(ray))

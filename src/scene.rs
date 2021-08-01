@@ -1,4 +1,5 @@
 use image::{DynamicImage, GenericImage, Pixel, Rgb, Rgba};
+use indicatif::{ProgressBar, ProgressStyle};
 use itertools::Itertools;
 use rayon::prelude::*;
 
@@ -51,6 +52,14 @@ impl Scene {
         let height = self.height as i32;
 
         let screen: Vec<(i32, i32)> = (0..width).cartesian_product(0..height).collect();
+
+        let pb = ProgressBar::new(screen.len() as u64);
+        pb.set_style(ProgressStyle::default_bar().template(
+            "{spinner:.cyan} {msg:.green} [{elapsed_precise}] \
+            {wide_bar:.magenta/white.dim} {percent}% ({eta})",
+        ));
+        pb.set_message("Rendering");
+
         let pixels: Vec<(i32, i32, Color)> = screen
             .par_iter()
             .map(|(i, j)| {
@@ -58,10 +67,12 @@ impl Scene {
                     + (i - (width / 2)) as f64 * self.camera.side
                     + ((height / 2) - j) as f64 * self.camera.up;
                 let v = raw.normalize();
-
                 let ray = Ray::new(&self.camera.position, v);
+                let ret = (*i, *j, self.trace(ray));
 
-                (*i, *j, self.trace(ray))
+                pb.inc(1);
+
+                ret
             })
             .collect();
 
@@ -70,6 +81,8 @@ impl Scene {
         }
 
         img.save(outfile).unwrap();
+
+        pb.finish();
     }
 
     fn trace(&self, ray: Ray) -> Color {

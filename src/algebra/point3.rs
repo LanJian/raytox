@@ -36,6 +36,14 @@ impl Sub for Point3 {
     }
 }
 
+impl Sub<Vector3> for Point3 {
+    type Output = Point3;
+
+    fn sub(self, rhs: Vector3) -> Self::Output {
+        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
 impl Neg for Point3 {
     type Output = Self;
 

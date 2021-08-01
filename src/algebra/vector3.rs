@@ -113,6 +113,14 @@ impl Div<f64> for Vector3 {
     }
 }
 
+impl Div<Vector3> for f64 {
+    type Output = Vector3;
+
+    fn div(self, rhs: Vector3) -> Self::Output {
+        Vector3::new(self / rhs.x, self / rhs.y, self / rhs.z)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Vector3;
@@ -150,5 +158,34 @@ mod tests {
         let expected = Vector3::new(0.0, 6.0, 0.0);
         let actual = Vector3::J * 6.0;
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn vector_div_scalar() {
+        assert_eq!(
+            Vector3::new(4.0, 10.0, 0.0) / 2.0,
+            Vector3::new(2.0, 5.0, 0.0)
+        );
+    }
+
+    #[test]
+    fn scalar_div_vector() {
+        assert_eq!(
+            16.0 / Vector3::new(4.0, 8.0, 2.0),
+            Vector3::new(4.0, 2.0, 8.0)
+        );
+    }
+
+    #[test]
+    fn div_by_zero() {
+        assert_eq!(
+            Vector3::new(4.0, 10.0, 1.0) / 0.0,
+            Vector3::new(f64::INFINITY, f64::INFINITY, f64::INFINITY)
+        );
+
+        assert_eq!(
+            16.0 / Vector3::new(0.0, -0.0, 0.0),
+            Vector3::new(f64::INFINITY, -f64::INFINITY, f64::INFINITY)
+        );
     }
 }
