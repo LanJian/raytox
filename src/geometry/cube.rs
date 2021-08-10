@@ -1,6 +1,6 @@
-use crate::algebra::{Point3, Ray, Vector3};
+use crate::algebra::{Point2, Point3, Ray, Vector3};
 
-use super::{Intersect, Intersection};
+use super::{Intersect, Intersection, Textured};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Cube {
@@ -18,11 +18,11 @@ impl Cube {
 }
 
 impl Default for Cube {
-    // unit cube with the min corner at (0, 0, 0)
+    // unit cube centered at (0, 0, 0)
     fn default() -> Self {
         Self {
-            min_bounds: Point3::new(0.0, 0.0, 0.0),
-            max_bounds: Point3::new(1.0, 1.0, 1.0),
+            min_bounds: Point3::new(-0.5, -0.5, -0.5),
+            max_bounds: Point3::new(0.5, 0.5, 0.5),
         }
     }
 }
@@ -71,7 +71,7 @@ impl Intersect for Cube {
             normal_min = normals[sign.2].2;
         }
         if tzmax < tmax {
-            tmax = tzmax; 
+            tmax = tzmax;
             normal_max = normals[1 - sign.2].2;
         }
 
@@ -80,17 +80,74 @@ impl Intersect for Cube {
         }
         if tmin < 0.0 {
             return Some(Intersection::new(
-                    tmax,
-                    *ray.origin + tmax * ray.dir,
-                    normal_max,
+                tmax,
+                ray.origin + tmax * ray.dir,
+                normal_max,
             ));
         }
 
         Some(Intersection::new(
             tmin,
-            *ray.origin + tmin * ray.dir,
+            ray.origin + tmin * ray.dir,
             normal_min,
         ))
+    }
+}
+
+impl Textured for Cube {
+    fn to_texture_space(&self, p: &Point3) -> Point2 {
+        let abs_p = Point3::new(p.x.abs(), p.y.abs(), p.z.abs());
+
+        let uc: f64;
+        let vc: f64;
+        let u_index: usize;
+        let v_index: usize;
+
+        if p.x > 0.0 && abs_p.x >= abs_p.y && abs_p.x >= abs_p.z {
+            // positive X
+            uc = p.z;
+            vc = p.y;
+            u_index = 2;
+            v_index = 1;
+        } else if p.x < 0.0 && abs_p.x >= abs_p.y && abs_p.x >= abs_p.z {
+            // negative x
+            uc = -p.z;
+            vc = p.y;
+            u_index = 0;
+            v_index = 1;
+        } else if p.y > 0.0 && abs_p.y >= abs_p.x && abs_p.y >= abs_p.z {
+            // positive y
+            uc = p.x;
+            vc = p.z;
+            u_index = 1;
+            v_index = 2;
+        } else if p.y < 0.0 && abs_p.y >= abs_p.x && abs_p.y >= abs_p.z {
+            // negative y
+            uc = p.x;
+            vc = -p.z;
+            u_index = 1;
+            v_index = 0;
+        } else if p.z > 0.0 && abs_p.z >= abs_p.x && abs_p.z >= abs_p.y {
+            // positive z
+            uc = -p.x;
+            vc = p.y;
+            u_index = 3;
+            v_index = 1;
+        } else {
+            // negative z
+            uc = p.x;
+            vc = p.y;
+            u_index = 1;
+            v_index = 1;
+        }
+
+        let u = 0.5 * (uc / 0.5 + 1.0);
+        let v = 0.5 * (vc / 0.5 + 1.0);
+
+        Point2::new(
+            u / 4.0 + u_index as f64 * (1.0 / 4.0),
+            v / 3.0 + v_index as f64 * (1.0 / 3.0),
+        )
     }
 }
 
@@ -104,7 +161,7 @@ mod tests {
 
         // hit from left
         let mut origin = Point3::O - Vector3::I;
-        let mut ray = Ray::new(&origin, Vector3::I);
+        let mut ray = Ray::new(origin, Vector3::I);
         assert_eq!(
             cube.intersect(&ray),
             Some(Intersection::new(
@@ -116,7 +173,7 @@ mod tests {
 
         // hit from right
         origin = Point3::O + Vector3::I;
-        ray = Ray::new(&origin, -Vector3::I);
+        ray = Ray::new(origin, -Vector3::I);
         assert_eq!(
             cube.intersect(&ray),
             Some(Intersection::new(
@@ -128,7 +185,7 @@ mod tests {
 
         // hit from bottom
         origin = Point3::O - Vector3::J;
-        ray = Ray::new(&origin, Vector3::J);
+        ray = Ray::new(origin, Vector3::J);
         assert_eq!(
             cube.intersect(&ray),
             Some(Intersection::new(
@@ -140,7 +197,7 @@ mod tests {
 
         // hit from top
         origin = Point3::O + Vector3::J;
-        ray = Ray::new(&origin, -Vector3::J);
+        ray = Ray::new(origin, -Vector3::J);
         assert_eq!(
             cube.intersect(&ray),
             Some(Intersection::new(
@@ -152,7 +209,7 @@ mod tests {
 
         // hit from front
         origin = Point3::O - Vector3::K;
-        ray = Ray::new(&origin, Vector3::K);
+        ray = Ray::new(origin, Vector3::K);
         assert_eq!(
             cube.intersect(&ray),
             Some(Intersection::new(
@@ -164,7 +221,7 @@ mod tests {
 
         // hit from back
         origin = Point3::O + Vector3::K;
-        ray = Ray::new(&origin, -Vector3::K);
+        ray = Ray::new(origin, -Vector3::K);
         assert_eq!(
             cube.intersect(&ray),
             Some(Intersection::new(
@@ -176,7 +233,7 @@ mod tests {
 
         // miss
         origin = Point3::O + Vector3::I;
-        ray = Ray::new(&origin, Vector3::J);
+        ray = Ray::new(origin, Vector3::J);
         assert_eq!(cube.intersect(&ray), None);
     }
 }

@@ -7,7 +7,7 @@ use crate::{
     algebra::{Ray, EPSILON},
     camera::Camera,
     color::Color,
-    geometry::Geometry,
+    entity::Entity,
     geometry::{Intersect, Intersection, Textured},
     light::PointLight,
 };
@@ -17,7 +17,7 @@ pub struct Scene {
     pub height: u32,
     pub fov: f64,
     pub camera: Camera,
-    pub objects: Vec<Geometry>,
+    pub entities: Vec<Entity>,
     pub lights: Vec<PointLight>,
     pub background: Color,
 }
@@ -29,14 +29,14 @@ impl Scene {
             height,
             fov,
             camera,
-            objects: Vec::new(),
+            entities: Vec::new(),
             lights: Vec::new(),
             background,
         }
     }
 
-    pub fn add_object(&mut self, obj: impl Into<Geometry>) {
-        self.objects.push(obj.into());
+    pub fn add_entity(&mut self, entity: Entity) {
+        self.entities.push(entity);
     }
 
     pub fn add_light(&mut self, light: PointLight) {
@@ -67,7 +67,7 @@ impl Scene {
                     + (i - (width / 2)) as f64 * self.camera.side
                     + ((height / 2) - j) as f64 * self.camera.up;
                 let v = raw.normalize();
-                let ray = Ray::new(&self.camera.position, v);
+                let ray = Ray::new(self.camera.position, v);
                 let ret = (*i, *j, self.trace(ray));
 
                 pb.inc(1);
@@ -88,7 +88,7 @@ impl Scene {
     fn trace(&self, ray: Ray) -> Color {
         match self.closest_intersection(&ray) {
             Some((
-                obj,
+                entity,
                 Intersection {
                     position: intersect_point,
                     normal,
@@ -98,8 +98,8 @@ impl Scene {
                 .lights
                 .iter()
                 .map(|light| {
-                    let material = obj.material();
-                    let uv = obj.to_texture_space(&intersect_point);
+                    let material = entity.material();
+                    let uv = entity.to_texture_space(&intersect_point);
 
                     let ka = material.ambient.color_at(&uv);
                     let kd = material.diffuse.color_at(&uv);
@@ -120,7 +120,7 @@ impl Scene {
                     let mut color = ka * ia * intensity;
 
                     let offset_position = intersect_point + EPSILON * normal;
-                    let shadow_ray = Ray::new(&offset_position, l);
+                    let shadow_ray = Ray::new(offset_position, l);
 
                     let shadow_intersection = self.closest_intersection(&shadow_ray);
                     let obstructed = match shadow_intersection {
@@ -150,8 +150,8 @@ impl Scene {
         }
     }
 
-    fn closest_intersection(&self, ray: &Ray) -> Option<(&Geometry, Intersection)> {
-        self.objects
+    fn closest_intersection(&self, ray: &Ray) -> Option<(&Entity, Intersection)> {
+        self.entities
             .iter()
             .filter_map(|x| x.intersect(ray).and_then(|i| Some((x, i))))
             .min_by(|(_, i1), (_, i2)| i1.partial_cmp(i2).unwrap())

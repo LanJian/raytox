@@ -22,10 +22,14 @@ impl Phong {
             shininess,
         }
     }
+
+    pub fn random_color() -> Self {
+        Self::new(Color::WHITE * 0.03, Color::random(), Color::WHITE, 20.0)
+    }
 }
 
 impl Default for Phong {
     fn default() -> Self {
-        Self::new(Color::default(), Color::default(), Color::default(), 0.0)
+        Self::new(Color::WHITE * 0.03, Color::BLUE, Color::WHITE, 20.0)
     }
 }

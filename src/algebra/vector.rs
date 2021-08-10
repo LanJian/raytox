@@ -1,5 +1,9 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
+use crate::{entity::Transformable, geometry::Axis};
+
+use super::Matrix4;
+
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Vector3 {
     pub x: f64,
@@ -118,6 +122,43 @@ impl Div<Vector3> for f64 {
 
     fn div(self, rhs: Vector3) -> Self::Output {
         Vector3::new(self / rhs.x, self / rhs.y, self / rhs.z)
+    }
+}
+
+impl Transformable for Vector3 {
+    fn translate(self, translation: Vector3) -> Self {
+        Matrix4::translation(translation) * self
+    }
+
+    fn rotate(self, axis: Axis, degrees: f64) -> Self {
+        Matrix4::rotation(axis, degrees) * self
+    }
+
+    fn scale(self, scale: Vector3) -> Self {
+        Matrix4::scaling(scale) * self
+    }
+
+    fn transform(self, transform: Matrix4) -> Self {
+        transform * self
+    }
+}
+
+#[derive(Default, Debug, Clone, Copy, PartialEq)]
+pub struct Vector4 {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub w: f64,
+}
+
+impl From<Vector3> for Vector4 {
+    fn from(v: Vector3) -> Self {
+        Self {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+            w: 0.0,
+        }
     }
 }
 

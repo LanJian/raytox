@@ -3,6 +3,7 @@ use std::convert::TryFrom;
 use raytox::algebra::{Point3, Vector3};
 use raytox::camera::Camera;
 use raytox::color::Color;
+use raytox::entity::{Entity, Transformable};
 use raytox::geometry::Face;
 use raytox::geometry::Mesh;
 use raytox::geometry::Plane;
@@ -25,33 +26,40 @@ fn main() {
         Color::new(0.00, 0.03, 0.03),
     );
 
-    scene.add_object(Plane::new(
-        Point3::new(0.0, -10.0, 0.0),
-        Vector3::J,
-        Phong::new(
-            Color::WHITE * 0.03,
-            Texture::new(5.0, Checker::new(Color::WHITE * 0.4, Color::WHITE * 0.03)),
-            Color::WHITE,
-            20.0,
-        ),
-    ));
-    scene.add_object(Sphere::new(
-        Point3::new(-5.0, 0.0, 5.0),
-        5.0,
-        Phong::new(Color::WHITE * 0.03, Color::GREEN, Color::WHITE, 20.0),
-    ));
-    scene.add_object(Sphere::new(
-        Point3::new(5.0, 0.0, 0.0),
-        6.0,
-        Phong::new(
-            Color::WHITE * 0.03,
-            Texture::new(1.0, Image::from(image::open("assets/earth.jpg").unwrap())),
-            Color::WHITE * 0.1,
-            20.0,
-        ),
-    ));
-    scene.add_object(
-        Mesh::from(vec![
+    scene.add_entity(
+        Entity::from(Plane::new(Point3::new(0.0, -10.0, 0.0), Vector3::J))
+            .with_material(Phong::new(
+                Color::WHITE * 0.03,
+                Texture::new(5.0, Checker::new(Color::WHITE * 0.4, Color::WHITE * 0.03)),
+                Color::WHITE,
+                20.0,
+            ))
+            .build(),
+    );
+    scene.add_entity(
+        Entity::from(Sphere::new(Point3::new(-5.0, 0.0, 5.0), 5.0))
+            .with_material(Phong::new(
+                Color::WHITE * 0.03,
+                Color::GREEN,
+                Color::WHITE,
+                20.0,
+            ))
+            .build(),
+    );
+    scene.add_entity(
+        Entity::from(Sphere::default())
+            .scale(Vector3::new(6.0, 6.0, 6.0))
+            .translate(Vector3::new(5.0, 0.0, 0.0))
+            .with_material(Phong::new(
+                Color::WHITE * 0.03,
+                Texture::new(1.0, Image::from(image::open("assets/earth.jpg").unwrap())),
+                Color::WHITE * 0.1,
+                20.0,
+            ))
+            .build(),
+    );
+    scene.add_entity(
+        Entity::from(Mesh::from(vec![
             Face::try_from(vec![
                 // front face
                 Vertex::from(Point3::new(-5.0, 3.0, -8.0)),
@@ -100,13 +108,14 @@ fn main() {
                 Vertex::from(Point3::new(-5.0, -3.0, -2.0)),
             ])
             .expect("invalid polygon face"),
-        ])
+        ]))
         .with_material(Phong::new(
             Color::WHITE * 0.03,
             Color::BLUE,
             Color::WHITE,
             20.0,
-        )),
+        ))
+        .build(),
     );
 
     scene.add_light(PointLight::new(

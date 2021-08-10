@@ -2,16 +2,16 @@ use std::cmp::Ordering;
 
 use crate::algebra::{Point2, Ray};
 use crate::algebra::{Point3, Vector3};
-use crate::material::Phong;
 
-use super::Mesh;
 use super::Plane;
 use super::Sphere;
+use super::{Cube, Mesh};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Geometry {
     Sphere(Sphere),
     Plane(Plane),
+    Cube(Cube),
     Mesh(Mesh),
 }
 
@@ -23,21 +23,12 @@ pub trait Textured {
     fn to_texture_space(&self, p: &Point3) -> Point2;
 }
 
-impl Geometry {
-    pub fn material(&self) -> &Phong {
-        match self {
-            Self::Sphere(x) => &x.material,
-            Self::Plane(x) => &x.material,
-            Self::Mesh(x) => &x.material,
-        }
-    }
-}
-
 impl Intersect for Geometry {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
         match self {
             Self::Sphere(x) => x.intersect(ray),
             Self::Plane(x) => x.intersect(ray),
+            Self::Cube(x) => x.intersect(ray),
             Self::Mesh(x) => x.intersect(ray),
         }
     }
@@ -48,6 +39,7 @@ impl Textured for Geometry {
         match self {
             Self::Sphere(x) => x.to_texture_space(p),
             Self::Plane(x) => x.to_texture_space(p),
+            Self::Cube(x) => x.to_texture_space(p),
             Self::Mesh(x) => x.to_texture_space(p),
         }
     }
@@ -62,6 +54,12 @@ impl From<Sphere> for Geometry {
 impl From<Plane> for Geometry {
     fn from(p: Plane) -> Self {
         Geometry::Plane(p)
+    }
+}
+
+impl From<Cube> for Geometry {
+    fn from(c: Cube) -> Self {
+        Geometry::Cube(c)
     }
 }
 

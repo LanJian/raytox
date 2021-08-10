@@ -1,5 +1,28 @@
-use crate::algebra::vector3::Vector3;
-use std::ops::{Add, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
+
+use crate::{entity::Transformable, geometry::Axis};
+
+use super::{Matrix4, Vector3};
+
+#[derive(Default, Debug, Clone, Copy, PartialEq)]
+pub struct Point2 {
+    pub x: f64,
+    pub y: f64,
+}
+
+impl Point2 {
+    pub fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+}
+
+impl Div<f64> for Point2 {
+    type Output = Self;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        Self::new(self.x / rhs, self.y / rhs)
+    }
+}
 
 #[derive(Default, Debug, Clone, Copy, PartialEq)]
 pub struct Point3 {
@@ -68,10 +91,27 @@ impl Mul<Point3> for f64 {
     }
 }
 
+impl Transformable for Point3 {
+    fn translate(self, translation: Vector3) -> Self {
+        Matrix4::translation(translation) * self
+    }
+
+    fn rotate(self, axis: Axis, degrees: f64) -> Self {
+        Matrix4::rotation(axis, degrees) * self
+    }
+
+    fn scale(self, scale: Vector3) -> Self {
+        Matrix4::scaling(scale) * self
+    }
+
+    fn transform(self, transform: Matrix4) -> Self {
+        transform * self
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::Point3;
-    use super::Vector3;
+    use super::*;
 
     #[test]
     fn point_add_vector() {

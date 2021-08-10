@@ -1,6 +1,7 @@
 pub mod algebra;
 pub mod camera;
 pub mod color;
+pub mod entity;
 pub mod geometry;
 pub mod light;
 pub mod material;

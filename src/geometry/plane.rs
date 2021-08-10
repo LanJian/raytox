@@ -3,33 +3,33 @@ use crate::algebra::Point3;
 use crate::algebra::Ray;
 use crate::algebra::Vector3;
 use crate::algebra::EPSILON;
-use crate::material::Phong;
 
-use super::shape::Textured;
 use super::Intersect;
 use super::Intersection;
+use super::Textured;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Plane {
     pub origin: Point3,
     pub normal: Vector3,
-
-    pub material: Phong,
 }
 
 impl Plane {
-    pub fn new(origin: Point3, normal: Vector3, material: Phong) -> Self {
-        Self {
-            origin,
-            normal,
-            material,
-        }
+    pub fn new(origin: Point3, normal: Vector3) -> Self {
+        Self { origin, normal }
+    }
+}
+
+impl Default for Plane {
+    fn default() -> Self {
+        // XZ plane with normal of Vector::J
+        Self::new(Point3::O, Vector3::J)
     }
 }
 
 impl Intersect for Plane {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
-        let l0 = *ray.origin;
+        let l0 = ray.origin;
         let l = -ray.dir;
         let p0 = self.origin;
         let n = self.normal;
@@ -70,8 +70,8 @@ mod tests {
     #[test]
     fn intersect_hit() {
         let p = Point3::new(0.0, 10.0, 0.0);
-        let ray = Ray::new(&p, -Vector3::J);
-        let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
+        let ray = Ray::new(p, -Vector3::J);
+        let plane = Plane::new(Point3::O, Vector3::J);
 
         assert_eq!(
             plane.intersect(&ray),
@@ -82,8 +82,8 @@ mod tests {
     #[test]
     fn intersect_miss() {
         let p = Point3::new(0.0, 10.0, 0.0);
-        let ray = Ray::new(&p, Vector3::J);
-        let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
+        let ray = Ray::new(p, Vector3::J);
+        let plane = Plane::new(Point3::O, Vector3::J);
 
         assert_eq!(plane.intersect(&ray), None,);
     }
@@ -91,8 +91,8 @@ mod tests {
     #[test]
     fn intersect_parallel() {
         let p = Point3::new(0.0, 10.0, 0.0);
-        let ray = Ray::new(&p, Vector3::K);
-        let plane = Plane::new(Point3::O, Vector3::J, Phong::default());
+        let ray = Ray::new(p, Vector3::K);
+        let plane = Plane::new(Point3::O, Vector3::J);
 
         assert_eq!(plane.intersect(&ray), None,);
     }
@@ -100,8 +100,8 @@ mod tests {
     #[test]
     fn intersect_negative_t() {
         let p = Point3::new(0.0, 10.0, 0.0);
-        let ray = Ray::new(&p, Vector3::J);
-        let plane = Plane::new(Point3::O, -Vector3::J, Phong::default());
+        let ray = Ray::new(p, Vector3::J);
+        let plane = Plane::new(Point3::O, -Vector3::J);
 
         assert_eq!(plane.intersect(&ray), None,);
     }

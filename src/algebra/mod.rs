@@ -1,11 +1,13 @@
-mod point2;
-mod point3;
+mod matrix;
+mod point;
 mod ray;
-mod vector3;
+mod vector;
 
-pub use point2::Point2;
-pub use point3::Point3;
+pub use matrix::Matrix4;
+pub use point::Point2;
+pub use point::Point3;
 pub use ray::Ray;
-pub use vector3::Vector3;
+pub use vector::Vector3;
+pub use vector::Vector4;
 
 pub const EPSILON: f64 = 1e-6;

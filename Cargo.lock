@@ -543,6 +543,7 @@ dependencies = [
  "indicatif",
  "itertools",
  "ply-rs",
+ "rand",
  "rayon",
 ]
 

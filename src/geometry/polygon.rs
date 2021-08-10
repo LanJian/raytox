@@ -6,10 +6,7 @@ use ply_rs::{
     ply::{DefaultElement, Property},
 };
 
-use crate::{
-    algebra::{Point2, Point3, Ray, Vector3, EPSILON},
-    material::Phong,
-};
+use crate::algebra::{Point2, Point3, Ray, Vector3, EPSILON};
 
 use super::{Cube, Intersect, Intersection, Plane, Textured};
 
@@ -62,7 +59,7 @@ impl TryFrom<Vec<Vertex>> for Face {
 
 impl Intersect for Face {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
-        let plane = Plane::new(self.vertices[0].point, self.normal, Phong::default());
+        let plane = Plane::new(self.vertices[0].point, self.normal);
         let intersection = plane.intersect(ray);
 
         match intersection {
@@ -90,16 +87,9 @@ impl Intersect for Face {
 pub struct Mesh {
     pub faces: Vec<Face>,
     bounding_box: Cube,
-
-    pub material: Phong,
 }
 
 impl Mesh {
-    pub fn with_material(mut self, material: Phong) -> Self {
-        self.material = material;
-        self
-    }
-
     pub fn from_ply_file(path: &str) -> Result<Self, String> {
         let mut file = File::open(path).or_else(|_| Err("Cannot read file".to_string()))?;
 
@@ -191,7 +181,6 @@ impl From<Vec<Face>> for Mesh {
         Self {
             faces,
             bounding_box,
-            material: Phong::default(),
         }
     }
 }

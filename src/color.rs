@@ -1,4 +1,5 @@
 use image::{Pixel, Rgba};
+use rand::random;
 use std::{
     iter::Sum,
     ops::{Add, Mul, Sub},
@@ -44,6 +45,10 @@ impl Color {
             g: g.clamp(0.0, 1.0),
             b: b.clamp(0.0, 1.0),
         }
+    }
+
+    pub fn random() -> Self {
+        Self::new(random::<f64>(), random::<f64>(), random::<f64>())
     }
 }
 
