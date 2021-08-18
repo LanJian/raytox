@@ -11,7 +11,9 @@ use raytox::texture::Checker;
 use raytox::texture::Texture;
 
 fn main() {
-    let camera = Camera::new(Point3::new(0.0, 0.0, -35.0), Vector3::K, Vector3::J);
+    let mut camera = Camera::new(Point3::new(0.0, 0.0, -35.0));
+    camera.look_at(Point3::O);
+
     let mut scene = Scene::new(
         800,
         600,

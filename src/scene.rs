@@ -68,7 +68,7 @@ impl Scene {
                     + ((height / 2) - j) as f64 * self.camera.up;
                 let v = raw.normalize();
                 let ray = Ray::new(self.camera.position, v);
-                let ret = (*i, *j, self.trace(ray));
+                let ret = (*i, *j, self.trace(ray, 5));
 
                 pb.inc(1);
 
@@ -85,7 +85,11 @@ impl Scene {
         pb.finish();
     }
 
-    fn trace(&self, ray: Ray) -> Color {
+    fn trace(&self, ray: Ray, depth: i32) -> Color {
+        if depth == 0 {
+            return self.background;
+        }
+
         match self.closest_intersection(&ray) {
             Some((
                 entity,
@@ -94,58 +98,74 @@ impl Scene {
                     normal,
                     ..
                 },
-            )) => self
-                .lights
-                .iter()
-                .map(|light| {
-                    let material = entity.material();
-                    let uv = entity.to_texture_space(&intersect_point);
+            )) => {
+                let material = entity.material();
+                let uv = entity.to_texture_space(&intersect_point);
 
-                    let ka = material.ambient.color_at(&uv);
-                    let kd = material.diffuse.color_at(&uv);
-                    let ks = material.specular.color_at(&uv);
-                    let alpha = material.shininess;
+                let ka = material.ambient.color_at(&uv);
+                let kd = material.diffuse.color_at(&uv);
+                let ks = material.specular.color_at(&uv);
+                let alpha = material.shininess;
+                let reflectance = material.reflectance;
 
-                    let intensity = light.intensity_at(&intersect_point);
-                    let ip = light.position;
-                    let ia = light.ambient;
-                    let id = light.diffuse;
-                    let is = light.specular;
+                let n = normal;
+                let v = -ray.dir;
+                let offset_position = intersect_point + EPSILON * normal;
 
-                    let l = (ip - intersect_point).normalize();
-                    let n = normal;
-                    let r = 2.0 * l.dot(&n) * n - l;
-                    let v = -ray.dir;
+                let local_color = self
+                    .lights
+                    .iter()
+                    .map(|light| {
+                        let intensity = light.intensity_at(&intersect_point);
+                        let ip = light.position;
+                        let ia = light.ambient;
+                        let id = light.diffuse;
+                        let is = light.specular;
 
-                    let mut color = ka * ia * intensity;
+                        let l = (ip - intersect_point).normalize();
+                        let r = 2.0 * l.dot(&n) * n - l;
 
-                    let offset_position = intersect_point + EPSILON * normal;
-                    let shadow_ray = Ray::new(offset_position, l);
+                        let mut color = ka * ia * intensity;
 
-                    let shadow_intersection = self.closest_intersection(&shadow_ray);
-                    let obstructed = match shadow_intersection {
-                        Some((_, Intersection { t, .. }))
-                            if (ip - offset_position).magnitude() > t =>
-                        {
-                            true
+                        let shadow_ray = Ray::new(offset_position, l);
+
+                        let shadow_intersection = self.closest_intersection(&shadow_ray);
+                        let obstructed = match shadow_intersection {
+                            Some((_, Intersection { t, .. }))
+                                if (ip - offset_position).magnitude() > t =>
+                            {
+                                true
+                            }
+                            _ => false,
+                        };
+                        if obstructed {
+                            return color;
                         }
-                        _ => false,
-                    };
-                    if obstructed {
-                        return color;
-                    }
 
-                    if l.dot(&n) > 0.0 {
-                        color = color + kd * l.dot(&n) * id * intensity;
-                    }
+                        if l.dot(&n) > 0.0 {
+                            color = color + kd * l.dot(&n) * id * intensity;
+                        }
 
-                    if r.dot(&v) > 0.0 {
-                        color = color + ks * r.dot(&v).powf(alpha) * is * intensity;
-                    }
+                        if r.dot(&v) > 0.0 {
+                            color = color + ks * r.dot(&v).powf(alpha) * is * intensity;
+                        }
 
-                    color
-                })
-                .sum(),
+                        color
+                    })
+                    .sum();
+
+                if reflectance == 0.0 {
+                    return local_color;
+                }
+
+                let r = 2.0 * (v.dot(&n)) * n - v;
+                let reflected_ray = Ray::new(offset_position, r);
+                let reflected_color = self.trace(reflected_ray, depth - 1);
+
+                let blended_color =
+                    reflected_color * reflectance + local_color * (1.0 - reflectance);
+                blended_color
+            }
             None => self.background,
         }
     }

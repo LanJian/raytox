@@ -6,6 +6,7 @@ use super::{Intersect, Intersection, Textured};
 pub struct Cube {
     min_bounds: Point3,
     max_bounds: Point3,
+    flipped_normals: bool,
 }
 
 impl Cube {
@@ -13,7 +14,13 @@ impl Cube {
         Self {
             min_bounds,
             max_bounds,
+            flipped_normals: false,
         }
+    }
+
+    pub fn with_flipped_normals(mut self) -> Self {
+        self.flipped_normals = true;
+        self
     }
 }
 
@@ -23,6 +30,7 @@ impl Default for Cube {
         Self {
             min_bounds: Point3::new(-0.5, -0.5, -0.5),
             max_bounds: Point3::new(0.5, 0.5, 0.5),
+            flipped_normals: false,
         }
     }
 }
@@ -30,10 +38,19 @@ impl Default for Cube {
 impl Intersect for Cube {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
         let bounds = [self.min_bounds, self.max_bounds];
-        let normals = [
-            (-Vector3::I, -Vector3::J, -Vector3::K),
-            (Vector3::I, Vector3::J, Vector3::K),
-        ];
+        let normals = if self.flipped_normals {
+            [
+                // normals pointing towards the center of the cube
+                (Vector3::I, Vector3::J, Vector3::K),
+                (-Vector3::I, -Vector3::J, -Vector3::K),
+            ]
+        } else {
+            [
+                // normals pointing away from the center of the cube
+                (-Vector3::I, -Vector3::J, -Vector3::K),
+                (Vector3::I, Vector3::J, Vector3::K),
+            ]
+        };
         let inv_dir = 1.0 / ray.dir;
         let sign = (
             (inv_dir.x < 0.0) as usize,

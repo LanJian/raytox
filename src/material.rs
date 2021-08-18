@@ -6,6 +6,7 @@ pub struct Phong {
     pub diffuse: Texture,
     pub specular: Texture,
     pub shininess: f64,
+    pub reflectance: f64,
 }
 
 impl Phong {
@@ -20,11 +21,17 @@ impl Phong {
             diffuse: diffuse.into(),
             specular: specular.into(),
             shininess,
+            reflectance: 0.0,
         }
     }
 
     pub fn random_color() -> Self {
         Self::new(Color::WHITE * 0.03, Color::random(), Color::WHITE, 20.0)
+    }
+
+    pub fn with_reflectance(mut self, reflectance: f64) -> Self {
+        self.reflectance = reflectance;
+        self
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::algebra::{Point3, Vector3};
+use crate::algebra::{EPSILON, Point3, Vector3};
 
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct Camera {
@@ -9,12 +9,27 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(position: Point3, view: Vector3, up: Vector3) -> Self {
+    pub fn new(position: Point3) -> Self {
         Self {
             position,
-            view,
-            up,
-            side: up.cross(&view),
+            view: Vector3::K,
+            up: Vector3::J,
+            side: Vector3::J.cross(&Vector3::K),
         }
+    }
+
+    pub fn look_at(&mut self, point: Point3) {
+        // view vector
+        self.view = (point - self.position).normalize();
+
+        // side vector
+        let mut candidate = Vector3::J.cross(&self.view);
+        if candidate.magnitude() < EPSILON {
+            candidate = Vector3::K.cross(&self.view);
+        }
+        self.side = candidate.normalize();
+
+        // up vector
+        self.view.cross(&self.side).normalize();
     }
 }
