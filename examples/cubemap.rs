@@ -3,7 +3,7 @@ use raytox::camera::Camera;
 use raytox::color::Color;
 use raytox::entity::{Entity, Transformable};
 use raytox::geometry::{Plane, Sphere};
-use raytox::geometry::{Axis, Cube};
+use raytox::geometry::Cube;
 use raytox::light::PointLight;
 use raytox::material::Phong;
 use raytox::scene::Scene;

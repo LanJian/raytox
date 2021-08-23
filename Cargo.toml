@@ -10,5 +10,5 @@ image = "*"
 ply-rs = "*"
 rayon = "*"
 itertools = "*"
-indicatif = "*"
+indicatif = {version = "*", features = ["rayon"]}
 rand = "*"

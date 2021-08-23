@@ -50,6 +50,7 @@ impl Scene {
 
         let width = self.width as i32;
         let height = self.height as i32;
+        let max_y = height - 1;
 
         let screen: Vec<(i32, i32)> = (0..width).cartesian_product(0..height).collect();
 
@@ -61,23 +62,25 @@ impl Scene {
         pb.set_message("Rendering");
 
         let pixels: Vec<(i32, i32, Color)> = screen
-            .par_iter()
-            .map(|(i, j)| {
+            .into_par_iter()
+            .map(|(x, y)| {
                 let raw = d * self.camera.view
-                    + (i - (width / 2)) as f64 * self.camera.side
-                    + ((height / 2) - j) as f64 * self.camera.up;
+                    + (x - (width / 2)) as f64 * self.camera.side
+                    + ((height / 2) - y) as f64 * self.camera.up;
                 let v = raw.normalize();
                 let ray = Ray::new(self.camera.position, v);
-                let ret = (*i, *j, self.trace(ray, 5));
+                let ret = (x, y, self.trace(ray, 5));
 
-                pb.inc(1);
+                if y == max_y {
+                    pb.inc(height as u64);
+                }
 
                 ret
             })
             .collect();
 
-        for (i, j, color) in pixels {
-            img.put_pixel(i as u32, j as u32, color.into());
+        for (x, y, color) in pixels {
+            img.put_pixel(x as u32, y as u32, color.into());
         }
 
         img.save(outfile).unwrap();
