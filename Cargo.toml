@@ -12,3 +12,4 @@ rayon = "*"
 itertools = "*"
 indicatif = {version = "*", features = ["rayon"]}
 rand = "*"
+piston_window = "*"

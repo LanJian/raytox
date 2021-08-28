@@ -27,6 +27,7 @@ impl PointLight {
         }
     }
 
+    /// Returns the intensity of the light at the given point in world space.
     pub fn intensity_at(&self, p: &Point3) -> f64 {
         let r2 = (*p - self.position).norm();
         self.intensity / r2

@@ -51,5 +51,5 @@ fn main() {
         200.0,
     ));
 
-    scene.render(String::from("examples/mesh.png"));
+    scene.render().save("output/mesh.png").unwrap();
 }

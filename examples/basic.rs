@@ -135,5 +135,5 @@ fn main() {
         300.0,
     ));
 
-    scene.render(String::from("examples/basic.png"));
+    scene.render().save("output/basic.png").unwrap();
 }

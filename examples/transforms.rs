@@ -75,5 +75,5 @@ fn main() {
         300.0,
     ));
 
-    scene.render(String::from("examples/transforms.png"));
+    scene.render().save("output/transforms.png").unwrap();
 }

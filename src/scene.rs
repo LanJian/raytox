@@ -43,7 +43,7 @@ impl Scene {
         self.lights.push(light);
     }
 
-    pub fn render(&self, outfile: String) {
+    pub fn render(&self) -> DynamicImage {
         let mut img = DynamicImage::new_rgb8(self.width, self.height);
 
         let d = (self.width as f64 / 2.0) / (self.fov / 2.0).tan();
@@ -54,12 +54,12 @@ impl Scene {
 
         let screen: Vec<(i32, i32)> = (0..width).cartesian_product(0..height).collect();
 
-        let pb = ProgressBar::new(screen.len() as u64);
-        pb.set_style(ProgressStyle::default_bar().template(
-            "{spinner:.cyan} {msg:.green} [{elapsed_precise}] \
-            {wide_bar:.magenta/white.dim} {percent}% ({eta})",
-        ));
-        pb.set_message("Rendering");
+        //let pb = ProgressBar::new(screen.len() as u64);
+        //pb.set_style(ProgressStyle::default_bar().template(
+            //"{spinner:.cyan} {msg:.green} [{elapsed_precise}] \
+            //{wide_bar:.magenta/white.dim} {percent}% ({eta})",
+        //));
+        //pb.set_message("Rendering");
 
         let pixels: Vec<(i32, i32, Color)> = screen
             .into_par_iter()
@@ -71,9 +71,9 @@ impl Scene {
                 let ray = Ray::new(self.camera.position, v);
                 let ret = (x, y, self.trace(ray, 5));
 
-                if y == max_y {
-                    pb.inc(height as u64);
-                }
+                //if y == max_y {
+                    //pb.inc(height as u64);
+                //}
 
                 ret
             })
@@ -83,9 +83,11 @@ impl Scene {
             img.put_pixel(x as u32, y as u32, color.into());
         }
 
-        img.save(outfile).unwrap();
+        //img.save(outfile).unwrap();
 
-        pb.finish();
+        //pb.finish();
+
+        return img;
     }
 
     fn trace(&self, ray: Ray, depth: i32) -> Color {
