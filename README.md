@@ -3,10 +3,10 @@
 Simple raytracer
 
 ## Progress
-![](examples/basic.png)
-![](examples/mesh.png)
-![](examples/transforms.png)
-![](examples/cubemap.png)
+![basic](output/basic.png)
+![mesh](output/mesh.png)
+![tranforms](output/transforms.png)
+![cubemap](output/cubemap.png)
 
 ## Development
 ```
