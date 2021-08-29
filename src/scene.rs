@@ -43,10 +43,24 @@ impl Scene {
         self.lights.push(light);
     }
 
+    pub fn ray_to_screen_space(&self, x: i32, y: i32) -> Ray {
+        let width = self.width as i32;
+        let height = self.height as i32;
+
+        let d = (width as f64 / 2.0) / (self.fov / 2.0).tan();
+        let raw = d * self.camera.view
+            + (x - (width / 2)) as f64 * self.camera.side
+            + ((height / 2) - y) as f64 * self.camera.up;
+        Ray::new(self.camera.position, raw)
+    }
+
+    pub fn set_size(&mut self, width: u32, height: u32) {
+        self.width = width;
+        self.height = height;
+    }
+
     pub fn render(&self) -> DynamicImage {
         let mut img = DynamicImage::new_rgb8(self.width, self.height);
-
-        let d = (self.width as f64 / 2.0) / (self.fov / 2.0).tan();
 
         let width = self.width as i32;
         let height = self.height as i32;
@@ -64,12 +78,8 @@ impl Scene {
         let pixels: Vec<(i32, i32, Color)> = screen
             .into_par_iter()
             .map(|(x, y)| {
-                let raw = d * self.camera.view
-                    + (x - (width / 2)) as f64 * self.camera.side
-                    + ((height / 2) - y) as f64 * self.camera.up;
-                let v = raw.normalize();
-                let ray = Ray::new(self.camera.position, v);
-                let ret = (x, y, self.trace(ray, 5));
+                let ray = self.ray_to_screen_space(x, y);
+                let ret = (x, y, self.trace(ray.normalize(), 5));
 
                 //if y == max_y {
                     //pb.inc(height as u64);

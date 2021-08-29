@@ -30,6 +30,6 @@ impl Camera {
         self.side = candidate.normalize();
 
         // up vector
-        self.view.cross(&self.side).normalize();
+        self.up = self.view.cross(&self.side).normalize();
     }
 }

@@ -19,6 +19,10 @@ impl Ray {
     pub fn distance_to(&self, point: Point3) -> f64 {
         (point - self.origin).dot(&self.dir)
     }
+
+    pub fn normalize(&self) -> Self {
+        Ray::new(self.origin, self.dir.normalize())
+    }
 }
 
 impl Transformable for Ray {
