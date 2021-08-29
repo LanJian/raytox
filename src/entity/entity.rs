@@ -14,6 +14,7 @@ pub struct Entity {
     translation: Matrix4,
     rotation: Matrix4,
     scaling: Matrix4,
+    ad_hoc_transform: Matrix4,
 
     transform: Matrix4,
     inv_transform: Matrix4,
@@ -31,7 +32,7 @@ impl Entity {
 
     pub fn build(mut self) -> Self {
         // apply eveything except translation
-        self.transform = self.rotation * self.scaling * self.transform;
+        self.transform = self.rotation * self.scaling * self.ad_hoc_transform;
 
         // for intuitiveness, apply translation in world space instead of object space
         self.transform[0][3] += self.translation[0][3];
@@ -53,6 +54,7 @@ impl From<Geometry> for Entity {
             translation: Matrix4::default(),
             rotation: Matrix4::default(),
             scaling: Matrix4::default(),
+            ad_hoc_transform: Matrix4::default(),
             transform: Matrix4::default(),
             inv_transform: Matrix4::default(),
         }
@@ -138,7 +140,7 @@ impl Transformable for Entity {
     }
 
     fn transform(mut self, transform: Matrix4) -> Self {
-        self.transform = self.transform * transform;
+        self.ad_hoc_transform = self.ad_hoc_transform * transform;
         self
     }
 }

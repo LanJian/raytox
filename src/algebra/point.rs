@@ -16,6 +16,12 @@ impl Point2 {
     }
 }
 
+impl From<[f64; 2]> for Point2 {
+    fn from(p: [f64; 2]) -> Self {
+        Self::new(p[0], p[1])
+    }
+}
+
 impl Div<f64> for Point2 {
     type Output = Self;
 

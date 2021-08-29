@@ -2,25 +2,29 @@ use raytox::algebra::{Point3, Vector3};
 use raytox::camera::Camera;
 use raytox::color::Color;
 use raytox::entity::{Entity, Transformable};
-use raytox::geometry::{Plane, Sphere};
 use raytox::geometry::Cube;
+use raytox::geometry::{Plane, Sphere};
+use raytox::interactive::InteractiveWindow;
 use raytox::light::PointLight;
 use raytox::material::Phong;
 use raytox::scene::Scene;
 use raytox::texture::Texture;
 use raytox::texture::{Checker, Image};
 
+const WIDTH: u32 = 800;
+const HEIGHT: u32 = 400;
+
 fn main() {
     let mut camera = Camera::new(Point3::new(0.0, 3.0, 0.0));
     camera.look_at(Point3::new(0.0, 0.0, 30.0));
 
     let mut scene = Scene::new(
-        1200,
-        600,
-        120.0_f64.to_radians(),
+        WIDTH,
+        HEIGHT,
+        70.0_f64.to_radians(),
         camera,
         Color::new(0.00, 0.03, 0.03),
-    ).with_progress_bar();
+    );
 
     scene.add_entity(
         Entity::from(Plane::default())
@@ -69,5 +73,6 @@ fn main() {
         f64::INFINITY,
     ));
 
-    scene.render().save("output/cubemap.png").unwrap();
+    let mut window = InteractiveWindow::new(scene);
+    window.start();
 }

@@ -36,7 +36,6 @@ fn main() {
                 Color::WHITE,
                 20.0,
             ))
-            .build(),
     );
     scene.add_entity(
         Entity::from(Sphere::new(Point3::new(-5.0, 0.0, 5.0), 5.0))
@@ -46,7 +45,6 @@ fn main() {
                 Color::WHITE,
                 20.0,
             ))
-            .build(),
     );
     scene.add_entity(
         Entity::from(Sphere::default())
@@ -58,7 +56,6 @@ fn main() {
                 Color::WHITE * 0.1,
                 20.0,
             ))
-            .build(),
     );
     scene.add_entity(
         Entity::from(Mesh::from(vec![
@@ -117,7 +114,6 @@ fn main() {
             Color::WHITE,
             20.0,
         ))
-        .build(),
     );
 
     scene.add_light(PointLight::new(

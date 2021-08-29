@@ -31,7 +31,6 @@ fn main() {
                 20.0,
             ))
             .translate(Vector3::new(0.0, -10.0, 0.0))
-            .build(),
     );
     scene.add_entity(
         Entity::from(Cube::default())
@@ -40,7 +39,6 @@ fn main() {
             .rotate(Axis::X, -45.0)
             .rotate(Axis::Y, 45.0)
             .translate(Vector3::new(5.0, 0.0, 0.0))
-            .build(),
     );
     scene.add_entity(
         Entity::from(Cube::default())
@@ -50,7 +48,6 @@ fn main() {
             .rotate(Axis::Y, 30.0)
             .rotate(Axis::Z, 60.0)
             .translate(Vector3::new(-7.0, 4.0, 0.0))
-            .build(),
     );
 
     scene.add_light(PointLight::new(

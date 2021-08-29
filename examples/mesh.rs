@@ -19,7 +19,7 @@ fn main() {
         70.0_f64.to_radians(),
         camera,
         Color::new(0.00, 0.03, 0.03),
-    );
+    ).with_progress_bar();
 
     scene.add_entity(
         Entity::from(Plane::new(Point3::new(0.0, -10.0, 0.0), Vector3::J))
@@ -29,7 +29,6 @@ fn main() {
                 Color::WHITE,
                 20.0,
             ))
-            .build(),
     );
 
     scene.add_entity(
@@ -40,7 +39,6 @@ fn main() {
                 Color::WHITE,
                 20.0,
             ))
-            .build(),
     );
 
     scene.add_light(PointLight::new(

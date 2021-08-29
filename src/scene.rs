@@ -20,6 +20,7 @@ pub struct Scene {
     pub entities: Vec<Entity>,
     pub lights: Vec<PointLight>,
     pub background: Color,
+    pub use_progress_bar: bool,
 }
 
 impl Scene {
@@ -32,11 +33,17 @@ impl Scene {
             entities: Vec::new(),
             lights: Vec::new(),
             background,
+            use_progress_bar: false,
         }
     }
 
+    pub fn with_progress_bar(mut self) -> Scene {
+        self.use_progress_bar = true;
+        self
+    }
+
     pub fn add_entity(&mut self, entity: Entity) {
-        self.entities.push(entity);
+        self.entities.push(entity.build());
     }
 
     pub fn add_light(&mut self, light: PointLight) {
@@ -68,12 +75,16 @@ impl Scene {
 
         let screen: Vec<(i32, i32)> = (0..width).cartesian_product(0..height).collect();
 
-        //let pb = ProgressBar::new(screen.len() as u64);
-        //pb.set_style(ProgressStyle::default_bar().template(
-            //"{spinner:.cyan} {msg:.green} [{elapsed_precise}] \
-            //{wide_bar:.magenta/white.dim} {percent}% ({eta})",
-        //));
-        //pb.set_message("Rendering");
+        let mut pb: Option<ProgressBar> = None;
+        if self.use_progress_bar {
+            let bar = ProgressBar::new(screen.len() as u64);
+            bar.set_style(ProgressStyle::default_bar().template(
+                    "{spinner:.cyan} {msg:.green} [{elapsed_precise}] \
+            {wide_bar:.magenta/white.dim} {percent}% ({eta})",
+            ));
+            bar.set_message("Rendering");
+            pb = Some(bar);
+        }
 
         let pixels: Vec<(i32, i32, Color)> = screen
             .into_par_iter()
@@ -81,9 +92,11 @@ impl Scene {
                 let ray = self.ray_to_screen_space(x, y);
                 let ret = (x, y, self.trace(ray.normalize(), 5));
 
-                //if y == max_y {
-                    //pb.inc(height as u64);
-                //}
+                if let Some(bar) = &pb {
+                    if y == max_y {
+                        bar.inc(height as u64);
+                    }
+                }
 
                 ret
             })
@@ -93,9 +106,9 @@ impl Scene {
             img.put_pixel(x as u32, y as u32, color.into());
         }
 
-        //img.save(outfile).unwrap();
-
-        //pb.finish();
+        if let Some(bar) = &pb {
+            bar.finish();
+        }
 
         return img;
     }
