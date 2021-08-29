@@ -11,16 +11,13 @@ use raytox::scene::Scene;
 use raytox::texture::Texture;
 use raytox::texture::{Checker, Image};
 
-const WIDTH: u32 = 800;
-const HEIGHT: u32 = 400;
-
 fn main() {
     let mut camera = Camera::new(Point3::new(0.0, 3.0, 0.0));
     camera.look_at(Point3::new(0.0, 0.0, 30.0));
 
     let mut scene = Scene::new(
-        WIDTH,
-        HEIGHT,
+        800,
+        400,
         70.0_f64.to_radians(),
         camera,
         Color::new(0.00, 0.03, 0.03),
